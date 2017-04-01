@@ -4,52 +4,117 @@
 
 #define NAME_MAX 32
 
-int login(void);
-struct student *create_student_info(struct student *, unsigned int , char *);
-void diplay_student_info(struct student *);
+void login(void);
 
 struct student {
     unsigned int ID;
-    char *student_name;
+    char student_name[32];
     struct student *next;
 };
+
+
+struct student *create_student_info(struct student *);
+void diplay_student_info(struct student *);
+void search_student_info(struct student *);
+void delete_student_info(struct student *);
 
 int main(void) 
 {
     struct student *first = NULL;
     char *student_name;
-    unsigned int ID;
+    unsigned int ID, option;
     
     login();
 
+    printf("1. insert students information.\n"
+           "2. search and display the students' information.\n"
+           "3. revise the students' information.\n"
+           "4. delete the students' information.\n"
+           "5. quit and exit the program.\n");
+
+    //printf("%d", option);
     for (;;) {
-        puts("please input the studetn's ID");
-        scanf("%u", &ID);
-        if (ID == 0) goto END;
-        puts("please input the studetn's name");
-        scanf("%s", student_name);
-        first = create_student_info(first, ID, student_name);
+        puts("\nplease select the number your want to operate: ");
+        scanf("%d", &option);
+        switch(option) {
+            case 1:
+                first = create_student_info(first);
+                break;
+            case 2:
+                search_student_info(first);
+                break;
+            //case 'u':
+            //    update_student_info();
+            //    break;
+            //case 'd':
+            //    delete_student_info();
+            //    break;
+            default:
+                if (first != NULL) {
+                    puts("all the students' information:\n");
+                    diplay_student_info(first);
+                    return 0;
+                }
+                else {
+                    puts("\n    PLEASE SELECT THE RIGHT OPERATION NUMBER!");
+                    return 0;
+                }
+
+        }
     }
-
-    END:
-        puts("\n\nshow all the students's information: ");
-        diplay_student_info(first);
-
+    
     return 0;
+
 }
 
-struct student *create_student_info(struct student *first, 
-                            unsigned int ID, char *student_name)
+struct student *create_student_info(struct student *first)
 {
     struct student *new_student;
 
     new_student = malloc(sizeof(struct student));
-    new_student->ID = ID;
-    new_student->student_name = student_name;
+
+    puts("please input the studetn's ID");
+    scanf("%d", &new_student->ID);
+    puts("please input the studetn's name");
+    scanf("%s", new_student->student_name);
+
     new_student->next = first;
     first = new_student;
 
     return first;
+}
+
+void search_student_info(struct student *search_info)
+{
+    int item_num, ID;
+    char *student_name;
+    struct student *p;
+
+    puts("which information do you want to search, just select the number below:\n"
+         "      1. ID\n"
+         "      2. student_name \n"
+        );
+
+    scanf("%d", &item_num);
+    switch(item_num) {
+        case 1:
+            puts("please input the ID number");
+            scanf("%d", &ID);
+            for (p = search_info; p != NULL && p->ID != search_info->ID; p = p->next)
+                ;
+            printf("%d\t%s\n", p->ID, p->student_name);
+            break;
+        case 2:
+            puts("please input the student's name");
+            scanf("%s", student_name);
+            for (p = search_info; p != NULL && 
+                 p->student_name != search_info->student_name;
+                 p = p->next)
+                ;
+            printf("%u\t\t%s\n", p->ID, p->student_name);
+            break;
+    }
+
 }
 
 void diplay_student_info(struct student *first) 
@@ -58,13 +123,14 @@ void diplay_student_info(struct student *first)
 
     for (student_list = first; student_list != NULL; 
          student_list = student_list->next) 
-        printf("%u\t\t%s\n", student_list->ID, student_list->student_name);
+        printf("%d\t\t%s\n", student_list->ID, student_list->student_name);
+
 }
 
-int login(void)
+void login(void)
 {
-    char *username, *ori_useranme = "abcdef";
-    char *password, *ori_password = "111111";
+    char *username, *ori_useranme = "aa";
+    char *password, *ori_password = "11";
 
     username = (char *) malloc(sizeof(ori_useranme));
     password = (char *) malloc(sizeof(ori_password));
@@ -85,6 +151,4 @@ int login(void)
         else
             puts("\nlogin successfully, welcome!\n");
     }
-
-    return 0;
 }
