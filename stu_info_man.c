@@ -16,6 +16,7 @@ struct student {
 struct student *create_student_info(struct student *);
 void diplay_student_info(struct student *);
 void search_student_info(struct student *);
+void update_student_info(struct student *);
 void delete_student_info(struct student *);
 
 int main(void) 
@@ -26,11 +27,12 @@ int main(void)
     
     login();
 
-    printf("1. insert students information.\n"
-           "2. search and display the students' information.\n"
-           "3. revise the students' information.\n"
-           "4. delete the students' information.\n"
-           "5. quit and exit the program.\n");
+    printf("Options:\n"
+           "    1. insert students information.\n"
+           "    2. search and display the students' information.\n"
+           "    3. revise the students' information.\n"
+           "    4. delete the students' information.\n"
+           "    5. quit and exit the program.\n");
 
     //printf("%d", option);
     for (;;) {
@@ -133,10 +135,15 @@ void diplay_student_info(struct student *first)
 
 }
 
+//void update_student_info(struct student *)
+//{
+//}
+
 void login(void)
 {
     char *username, *ori_useranme = "aa";
     char *password, *ori_password = "11";
+    int i = 0;
 
     username = (char *) malloc(sizeof(ori_useranme));
     password = (char *) malloc(sizeof(ori_password));
@@ -149,12 +156,34 @@ void login(void)
         puts("please enter your password: ");
         scanf("%s", password);
 
-        if ((strcmp(ori_useranme, username) != 0) |
+        //if ((strcmp(ori_useranme, username) != 0) |
+        //    (strcmp(ori_password, password) != 0)) {
+        //    puts("your username or password is wrong!");
+        //    exit(0);
+        //}
+        //else
+        //    puts("\nlogin successfully, welcome!\n");
+
+        // input three times, the program will exit, there is 
+        // a issue for the last time. latter to solve it.
+        while ((strcmp(ori_useranme, username) != 0) |
             (strcmp(ori_password, password) != 0)) {
-            puts("your username or password is wrong!");
-            exit(0);
+            printf("Sorry, your username or password is wrong!"
+                   " you have %d times left to try.\n", 2-i);
+            puts("Please enter your username: ");
+            scanf("%s", username);
+            puts("Please enter your password: ");
+            scanf("%s", password);
+            i++;
+            if (i >= 2) {
+                puts("Your username or password is wrong! EXIT!");
+                exit(0);
+            }
         }
-        else
-            puts("\nlogin successfully, welcome!\n");
+
+        if ((strcmp(ori_useranme, username) == 0) |
+            (strcmp(ori_password, password) == 0)) {
+            puts("\nLogin successfully, Welcome!\n\n");
+        }
     }
 }
