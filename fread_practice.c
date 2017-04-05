@@ -13,7 +13,7 @@ int main(void)
     stu1 = &stu;
 
     fp = fopen("stu_info.bin", "rb");
-    for(; fread(stu1, sizeof(struct student), 1, fp) > 0; stu1 += 3)
+    for(; fread(stu1, sizeof(struct student), 1, fp) > 0; stu1 += 2)
         printf("%d\t%s\n", stu1->ID, stu1->student_name);
     fclose(fp);
 
