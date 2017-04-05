@@ -69,6 +69,7 @@ int main(void)
 
 struct student *create_student_info(struct student *first)
 {
+    FILE *fp;
     struct student *new_student;
 
     new_student = malloc(sizeof(struct student));
@@ -80,6 +81,11 @@ struct student *create_student_info(struct student *first)
 
     new_student->next = first;
     first = new_student;
+
+    if ((fp = fopen("stu_info.bin", "ab")) != NULL) {
+        fwrite(new_student, sizeof(struct student), 1, fp);
+        puts("write into file here");
+    }
 
     return first;
 }
