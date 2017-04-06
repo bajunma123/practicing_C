@@ -31,7 +31,8 @@ int main(void)
     
     login();
 
-    printf("Options:\n"
+    do {
+    printf("\nOptions:\n"
            "    1. insert students information.\n"
            "    2. search and display the students' information.\n"
            "    3. revise the students' information.\n"
@@ -40,7 +41,6 @@ int main(void)
            "    6. quit and exit the program.\n");
 
     //printf("%d", option);
-    for (;;) {
         puts("\nplease select the number your want to operate: ");
         scanf("%d", &option);
         switch(option) {
@@ -67,8 +67,8 @@ int main(void)
                     return 0;
                 }
 
-        }
     }
+    } while (option != 13);
     
     return 0;
 
@@ -118,7 +118,7 @@ struct student *create_student_info(struct student *first)
 void search_student_info(struct student *first)
 {
     int item_num, ID, age;
-    char *name;
+    char name[32];
     struct student *p;
 
     puts("which information do you want to search, just select the number below:\n"
@@ -137,40 +137,27 @@ void search_student_info(struct student *first)
             // if cannot find the result, what will happen?
             // deal with this issue later
             puts("Search Results: ");
-            printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
-                    p->ID, 
-                    p->name, 
-                    p->age,
-                    p->math, 
-                    p->yuwen, 
-                    p->english);
+            printf("ID: %d\t name: %s\t age: %d\t math: %d\t yuwen: %d\t english: %d\t\n", 
+                    p->ID, p->name, p->age, p->math, p->yuwen, p->english);
             break;
         case 2:
-            puts("Please input the student's name");
+            puts("Please input the student's name: ");
             scanf("%s", name);
-            for (p = first; p != NULL && p->name == name; p = p->next) {
-                puts("Search Results: ");
-                printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
-                        p->ID, 
-                        p->name, 
-                        p->age,
-                        p->math, 
-                        p->yuwen, 
-                        p->english);
+            puts("Search Results: ");
+            p = first;
+            while (p != NULL && strcmp(p->name, name) == 0) {
+                printf("ID: %d\t name: %s\t age: %d\t math: %d\t yuwen: %d\t english: %d\t\n", 
+                        p->ID, p->name, p->age, p->math, p->yuwen, p->english);
+                p = p->next;
             }
             break;
         case 3:
             puts("Please input the student's age");
             scanf("%d", &age);
-            for (p = first; p != NULL && p->age== age; p = p->next) {
-                puts("Search Results: ");
-                printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
-                        p->ID, 
-                        p->name, 
-                        p->age,
-                        p->math, 
-                        p->yuwen, 
-                        p->english);
+            puts("Search Results: ");
+            for (p = first; p != NULL && p->age == age; p = p->next) {
+                printf("ID: %d\t name: %s\t age: %d\t math: %d\t yuwen: %d\t english: %d\t\n", 
+                        p->ID, p->name, p->age, p->math, p->yuwen, p->english);
             }
             break;
     }
@@ -220,10 +207,11 @@ void update_student_info(struct student *first)
         case 2:
             puts("Please input the student's ID number and name" 
                  "you want to update: ");
-            scanf("%d%s", &ID, name);
+            scanf("%d", &ID);
+            gets(name);
             for (p = first; p != NULL && p->ID != ID; p = p->next)
                 ;
-            p->name[32] = *name;
+            strcpy(p->name, name);
             puts("The related information is changed to: ");
             printf("%u\t %s\t %u\t %u\t %u\t %u\t\n", 
                     p->ID, 
