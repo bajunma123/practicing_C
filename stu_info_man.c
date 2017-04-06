@@ -8,20 +8,24 @@ void login(void);
 
 struct student {
     unsigned int ID;
-    char student_name[32];
+    char name[32];
+    unsigned int age;
+    unsigned int math;
+    unsigned int yuwen;
+    unsigned int english;
     struct student *next;
 };
 
+struct student *first = NULL;
 
 struct student *create_student_info(struct student *);
-void diplay_student_info(struct student *);
+//struct student *diplay_student_info(struct student *);
 void search_student_info(struct student *);
 void update_student_info(struct student *);
-void delete_student_info(struct student *);
+struct student *delete_student_info(struct student *);
 
 int main(void) 
 {
-    struct student *first = NULL;
     char *student_name;
     unsigned int ID, option;
     
@@ -32,7 +36,8 @@ int main(void)
            "    2. search and display the students' information.\n"
            "    3. revise the students' information.\n"
            "    4. delete the students' information.\n"
-           "    5. quit and exit the program.\n");
+           "    5. save to file.\n"
+           "    6. quit and exit the program.\n");
 
     //printf("%d", option);
     for (;;) {
@@ -45,16 +50,16 @@ int main(void)
             case 2:
                 search_student_info(first);
                 break;
-            //case 'u':
-            //    update_student_info();
-            //    break;
-            //case 'd':
-            //    delete_student_info();
-            //    break;
+            case 3:
+                update_student_info(first);
+                break;
+            case 4:
+                delete_student_info(first);
+                break;
             default:
                 if (first != NULL) {
                     puts("all the students' information:\n");
-                    diplay_student_info(first);
+                    //diplay_student_info(first);
                     return 0;
                 }
                 else {
@@ -76,68 +81,205 @@ struct student *create_student_info(struct student *first)
 
     new_student = malloc(sizeof(struct student));
 
-    puts("please input the studetn's ID");
+    if (new_student == NULL) {
+        printf("No enough memory space");
+        exit(0);
+    }
+
+    puts("please input the student's ID: ");
     scanf("%d", &new_student->ID);
-    puts("please input the studetn's name");
-    scanf("%s", new_student->student_name);
+    puts("please input the student's name: ");
+    scanf("%s", new_student->name);
+    puts("please input the student's age (0~100): ");
+    scanf("%u", &new_student->age);
+    puts("please input the student's math score (0~150): ");
+    scanf("%u", &new_student->math);
+    puts("please input the student's yuwen score (0-150): ");
+    scanf("%u", &new_student->yuwen);
+    puts("please input the student's english score (0~150): ");
+    scanf("%u", &new_student->english);
+    if (new_student->age > 100 || new_student->math > 150 ||
+        new_student->yuwen > 150 || new_student->english > 150) {
+        puts("Please check your input value in the right scope");
+        exit(0);
+    }
 
     new_student->next = first;
     first = new_student;
 
     if ((fp = fopen("stu_info.bin", "ab")) != NULL) {
         fwrite(new_student, sizeof(struct student), 1, fp);
-        puts("write into file here");
+        puts("write your data into file.");
     }
 
     return first;
 }
 
-void search_student_info(struct student *search_info)
+void search_student_info(struct student *first)
 {
-    int item_num, ID;
-    char *student_name;
+    int item_num, ID, age;
+    char *name;
     struct student *p;
 
     puts("which information do you want to search, just select the number below:\n"
          "      1. ID\n"
-         "      2. student_name \n"
+         "      2. name \n"
+         "      3. age\n"
         );
 
     scanf("%d", &item_num);
     switch(item_num) {
         case 1:
-            puts("please input the ID number");
+            puts("Please input the student's ID number");
             scanf("%d", &ID);
-            for (p = search_info; p != NULL && p->ID != search_info->ID; p = p->next)
+            for (p = first; p != NULL && p->ID != ID; p = p->next)
                 ;
-            printf("%d\t%s\n", p->ID, p->student_name);
+            // if cannot find the result, what will happen?
+            // deal with this issue later
+            puts("Search Results: ");
+            printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
+                    p->ID, 
+                    p->name, 
+                    p->age,
+                    p->math, 
+                    p->yuwen, 
+                    p->english);
             break;
         case 2:
-            puts("please input the student's name");
-            scanf("%s", student_name);
-            for (p = search_info; p != NULL && 
-                 p->student_name != search_info->student_name;
-                 p = p->next)
-                ;
-            printf("%u\t\t%s\n", p->ID, p->student_name);
+            puts("Please input the student's name");
+            scanf("%s", name);
+            for (p = first; p != NULL && p->name == name; p = p->next) {
+                puts("Search Results: ");
+                printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
+                        p->ID, 
+                        p->name, 
+                        p->age,
+                        p->math, 
+                        p->yuwen, 
+                        p->english);
+            }
+            break;
+        case 3:
+            puts("Please input the student's age");
+            scanf("%d", &age);
+            for (p = first; p != NULL && p->age== age; p = p->next) {
+                puts("Search Results: ");
+                printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
+                        p->ID, 
+                        p->name, 
+                        p->age,
+                        p->math, 
+                        p->yuwen, 
+                        p->english);
+            }
             break;
     }
 
 }
 
-void diplay_student_info(struct student *first) 
-{
-    struct student *student_list;
+//void display_student_info(struct student *first) 
+//{
+//    struct student *student_list;
+//
+//    for (student_list = first; student_list != NULL; 
+//         student_list = student_list->next) 
+//        printf("%d\t\t%s\n", student_list->ID, student_list->student_name);
+//
+//}
 
-    for (student_list = first; student_list != NULL; 
-         student_list = student_list->next) 
-        printf("%d\t\t%s\n", student_list->ID, student_list->student_name);
+void update_student_info(struct student *first)
+{
+    int item_num, ID, age;
+    char *name;
+    struct student *p;
+
+    // just show 3 options to update, the logic is same.
+    puts("Which information do you want to update, just select the number below:\n"
+         "      1. ID\n"
+         "      2. name \n"
+         "      3. age\n"
+        );
+
+    scanf("%d", &item_num);
+    switch(item_num) {
+        case 1:
+            puts("Please input the student's ID number you want to update: ");
+            scanf("%d", &ID);
+            for (p = first; p != NULL && p->ID != ID; p = p->next)
+                ;
+            p->ID = ID;
+            puts("The related information is changed to: ");
+            printf("%d\t %s\t %d\t %d\t %d\t %d\t\n", 
+                    p->ID, 
+                    p->name, 
+                    p->age,
+                    p->math, 
+                    p->yuwen, 
+                    p->english);
+            break;
+        case 2:
+            puts("Please input the student's ID number and name" 
+                 "you want to update: ");
+            scanf("%d%s", &ID, name);
+            for (p = first; p != NULL && p->ID != ID; p = p->next)
+                ;
+            p->name[32] = *name;
+            puts("The related information is changed to: ");
+            printf("%u\t %s\t %u\t %u\t %u\t %u\t\n", 
+                    p->ID, 
+                    p->name, 
+                    p->age,
+                    p->math, 
+                    p->yuwen, 
+                    p->english);
+            break;
+        case 3:
+            puts("Please input the student's ID number and age" 
+                 "you want to update: ");
+            scanf("%d%d", &ID, &age);
+            for (p = first; p != NULL && p->ID != ID; p = p->next)
+                ;
+            p->age= age;
+            puts("The related information is changed to: ");
+            printf("%u\t %s\t %u\t %u\t %u\t %u\t\n", 
+                    p->ID, 
+                    p->name, 
+                    p->age,
+                    p->math, 
+                    p->yuwen, 
+                    p->english);
+            break;
+    }
 
 }
 
-//void update_student_info(struct student *)
-//{
-//}
+struct student *delete_student_info(struct student *first)
+{
+    int ID;
+    struct student *ptrStu, *preptrStu;
+
+    if (first != NULL) {
+        if (first->next == NULL || first->ID == ID)
+            free(first);
+        else {
+            puts("Please input the student's ID number you want to delete: ");
+            scanf("%d", &ID);
+            ptrStu = first;
+            while (ptrStu->ID != ID) {
+                preptrStu = ptrStu;
+                ptrStu = ptrStu->next;
+            }
+            preptrStu->next = ptrStu->next;
+            free(ptrStu);
+        }
+    }
+    if (first == NULL)
+        puts("The students' information is empty");
+
+    return first;
+}
+
+
 
 void login(void)
 {
