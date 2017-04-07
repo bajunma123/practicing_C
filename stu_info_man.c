@@ -20,7 +20,7 @@ struct student *first = NULL;
 
 struct student *create_student_info(struct student *);
 void save_info_file(struct student *);
-//struct student *diplay_student_info(struct student *);
+void display_student_info(struct student *);
 void search_student_info(struct student *);
 void update_student_info(struct student *);
 struct student *delete_student_info(struct student *);
@@ -39,8 +39,9 @@ int main(void)
            "    2. search and display the students' information.\n"
            "    3. update the students' information.\n"
            "    4. delete the students' information.\n"
-           "    5. save to file.\n"
-           "    6. quit and exit the program.\n");
+           "    5. display all the students' information.\n"
+           "    6. save to file.\n"
+           "    7. quit and exit the program.\n");
 
     //printf("%d", option);
         puts("\nplease select the number your want to operate: ");
@@ -59,6 +60,9 @@ int main(void)
                 first = delete_student_info(first);
                 break;
             case 5:
+                display_student_info(first);
+                break;
+            case 6:
                 save_info_file(first);
                 break;
             default:
@@ -171,7 +175,7 @@ void save_info_file(struct student *first)
     FILE *fp;
 
     p = first;
-    puts("Write the students' info into file.");
+    printf("\nWrite the students' info into file.\nDone.\n");
     while(p != NULL) {
         if ((fp = fopen("stu_info.bin", "ab")) != NULL) {
             fwrite(p, sizeof(struct student), 1, fp);
@@ -180,15 +184,20 @@ void save_info_file(struct student *first)
     }
 }
 
-//void display_student_info(struct student *first) 
-//{
-//    struct student *student_list;
-//
-//    for (student_list = first; student_list != NULL; 
-//         student_list = student_list->next) 
-//        printf("%d\t\t%s\n", student_list->ID, student_list->student_name);
-//
-//}
+void display_student_info(struct student *first) 
+{
+    struct student *p;
+
+    if (first == NULL)
+        printf("\nThe students' information is empty.\n");
+    else {
+        printf("\nAll the students' information: \n");
+        for (p = first; p != NULL; p = p->next) 
+            printf("ID: %d\t name: %s\t age: %d\t math: %d\t yuwen: %d\t english: %d\t\n", 
+                    p->ID, p->name, p->age, p->math, p->yuwen, p->english);
+    }
+
+}
 
 void update_student_info(struct student *first)
 {
@@ -246,27 +255,24 @@ void update_student_info(struct student *first)
 
 struct student *delete_student_info(struct student *first)
 {
+    struct student *p, *prep;
     int ID;
-    struct student *ptrStu, *preptrStu, *p;
 
-    if (first != NULL) {
-        if (first->next == NULL || first->ID == ID)
-            free(first);
-        else {
-            puts("Please input the student's ID number you want to delete: ");
-            scanf("%d", &ID);
-            ptrStu = first;
-            while (ptrStu->ID != ID) {
-                preptrStu = ptrStu;
-                ptrStu = ptrStu->next;
-            }
-            preptrStu->next = ptrStu->next;
-            free(ptrStu);
-        }
+    puts("Please input the student's ID number you want to delete: ");
+    scanf("%d", &ID);
+    p = first;
+    while (p->ID == ID) {
+        first = p->next;
+        free(p);
+        return first;
     }
-    if (first == NULL)
-        puts("The students' information is empty");
 
+    while(p->ID != ID) {
+        prep = p;
+        p = p->next;
+    }
+    prep->next = p->next;
+    free(p);
     return first;
 }
 
