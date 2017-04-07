@@ -313,12 +313,13 @@ struct student *sort_student_info(struct student *first)
         }
         ptr1 = ptr1->next;
     }
+    printf("\nSort the student information as per their ID number.\nDone.\n");
     return first;
 }
 
 void login(void)
 {
-    char *username, *ori_useranme = "aa";
+    char *username, *ori_useranme = "admin";
     char *password, *ori_password = "11";
     int i = 0;
 
