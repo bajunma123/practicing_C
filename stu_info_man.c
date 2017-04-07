@@ -24,6 +24,7 @@ void display_student_info(struct student *);
 void search_student_info(struct student *);
 void update_student_info(struct student *);
 struct student *delete_student_info(struct student *);
+struct student *sort_student_info(struct student *);
 
 
 int main(void) 
@@ -34,53 +35,49 @@ int main(void)
     login();
 
     for (;;) {
-    printf("\nOptions:\n"
-           "    1. insert students information.\n"
-           "    2. search and display the students' information.\n"
-           "    3. update the students' information.\n"
-           "    4. delete the students' information.\n"
-           "    5. display all the students' information.\n"
-           "    6. save to file.\n"
-           "    7. quit and exit the program.\n");
+        printf("\nOptions:\n"
+               "    1. insert students information.\n"
+               "    2. search and display the students' information.\n"
+               "    3. update the students' information.\n"
+               "    4. delete the students' information.\n"
+               "    5. sort the students' information.\n"
+               "    6. display all the students' information.\n"
+               "    7. save to file.\n"
+               "    8. quit and exit the program.\n");
 
-    //printf("%d", option);
-        puts("\nplease select the number your want to operate: ");
-        scanf("%d", &option);
-        switch(option) {
-            case 1:
-                first = create_student_info(first);
-                break;
-            case 2:
-                search_student_info(first);
-                break;
-            case 3:
-                update_student_info(first);
-                break;
-            case 4:
-                first = delete_student_info(first);
-                break;
-            case 5:
-                display_student_info(first);
-                break;
-            case 6:
-                save_info_file(first);
-                break;
-            default:
-                if (first != NULL) {
-                    puts("all the students' information:\n");
-                    //diplay_student_info(first);
-                    return 0;
-                }
-                else {
-                    puts("\n    PLEASE SELECT THE RIGHT OPERATION NUMBER!");
-                    return 0;
-                }
+        //printf("%d", option);
+            puts("\nplease select the number your want to operate: ");
+            scanf("%d", &option);
+            switch(option) {
+                case 1:
+                    first = create_student_info(first);
+                    break;
+                case 2:
+                    search_student_info(first);
+                    break;
+                case 3:
+                    update_student_info(first);
+                    break;
+                case 4:
+                    first = delete_student_info(first);
+                    break;
+                case 5:
+                    sort_student_info(first);
+                    break;
+                case 6:
+                    display_student_info(first);
+                    break;
+                case 7:
+                    save_info_file(first);
+                    break;
+                default:
+                    puts("Exit this program!");
+                    exit(0);
 
-    }
+            }
     } 
     
     return 0;
-
 }
 
 struct student *create_student_info(struct student *first)
@@ -174,14 +171,17 @@ void save_info_file(struct student *first)
     struct student *p;
     FILE *fp;
 
+    if ((fp = fopen("stu_info.bin", "wb")) == NULL) {
+        puts("Cannot open this file.");
+    }
     p = first;
     printf("\nWrite the students' info into file.\nDone.\n");
     while(p != NULL) {
-        if ((fp = fopen("stu_info.bin", "ab")) != NULL) {
-            fwrite(p, sizeof(struct student), 1, fp);
-        }
+        fwrite(p, sizeof(struct student), 1, fp);
         p = p->next;
     }
+
+    fclose(fp);
 }
 
 void display_student_info(struct student *first) 
@@ -276,7 +276,45 @@ struct student *delete_student_info(struct student *first)
     return first;
 }
 
+struct student *sort_student_info(struct student *first)
+{
+    struct student *ptr1, *ptr2, *temp;
+    ptr1 = first;
+    while(ptr1->next != NULL)
+    {
+        ptr2 = ptr1->next;
+        while(ptr2 != NULL) {
+            if(ptr1->ID > ptr2->ID) {
+                temp->ID = ptr1->ID;
+                ptr1->ID = ptr2->ID;
+                ptr2->ID = temp->ID;
 
+                strcpy(temp->name, ptr1->name);
+                strcpy(ptr1->name, ptr2->name);
+                strcpy(ptr2->name, temp->name);
+
+                temp->age = ptr1->age;
+                ptr1->age = ptr2->age;
+                ptr2->age = temp->age;
+
+                temp->math = ptr1->math;
+                ptr1->math = ptr2->math;
+                ptr2->math = temp->math;
+
+                temp->yuwen = ptr1->yuwen;
+                ptr1->yuwen = ptr2->yuwen;
+                ptr2->yuwen = temp->yuwen;
+
+                temp->english = ptr1->english;
+                ptr1->english = ptr2->english;
+                ptr2->english = temp->english;
+            }
+            ptr2 = ptr2->next;
+        }
+        ptr1 = ptr1->next;
+    }
+    return first;
+}
 
 void login(void)
 {
