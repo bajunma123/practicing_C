@@ -2,45 +2,46 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-int main(int argc, char *argv[])
+
+int 
+read_bar(char *bdf_addr, u8 bar_addr,  u32 offset, u8 count)
 {
-    int dev_status, bar_status;
-    int count;
+    char dev_loc[50]; 
+    char *pcimem_arg[4];
+    char *pcimem_env[] = {NULL};
+    char check_device[30] = "lspci -s ";
+    int bar_status; 
     int step = 0x4;
-    char check_device[30];
-    char dev_loc[100]; 
+    int fd;
 
-    sprintf(check_device, "lspci -s %s", argv[1]);
-    sprintf(dev_loc, "/sys/bus/pci/devices/0000:%s/resource%s", argv[1], argv[2]);
-    //puts(check_device);
-    //puts(dev_loc);
+    strcat(check_device, bdf_addr);
     dev_status = system(check_device);
     if (dev_status) {
         printf("BDF %s does not exitst.\n", argv[1]);
         exit(1);
     }
 
+    sprintf(dev_loc, "/sys/bus/pci/devices/0000:%s/resource%d", bdf_addr, bar_addr)
     if ((bar_status = access(dev_loc, F_OK)) < 0) {
-        printf("BAR %s does not exist for BDF %s", argv[1], argv[2]);
+        printf("BAR %d does not exist for BDF %s", bar_addr, bdf_addr);
     }
 
-    if (argc < 3)
-        count = 1;
-    else
-        count = atoi(argv[4]);
+    pcimem_arg[0] = dev_loc;
+    pcimem_arg[2] = "w";
+    pcimem_arg[3] = NULL;
 
+    fd = open("file.txt", O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR | S_IROTH);
+    //dup2(fd, 1);
+    dup2(fd, 2);
+    close(fd);
+    for (i = 0; i < count; i++) {
+        pcimem_arg[1] = offset + i * step;
+        execve("./pcimem", pcimem_arg, pcimem_env);
+    }
 
-    char *newargv[10];
-    char *newenv = {NULL};
-
-        strcat(cmd_line, dev_loc, atoi(argv[3])+i*step);
-        argv[0] = cmd_line;
-        newargv[] = {cmd_line, NULL} 
-        execve("./pcimem", newargv, newenv);
-
-
-
-    return 0;
 }
 
